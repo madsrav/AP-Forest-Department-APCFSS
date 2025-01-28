@@ -1,0 +1,13 @@
+2020
+170
+MODIS
+Visakhapatnam
+DFO(T),Chintapalli
+Chintapalli
+Chintapalli
+CHINTAPALLI_SOUTH
+NO
+BOINTI
+170
+170
+2025-01-13T04:12

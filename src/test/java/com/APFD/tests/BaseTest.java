@@ -11,10 +11,10 @@ import com.APFD.driver.APFDFrameworkDriver;
 		protected BaseTest() {
 		}
 		
-		@Parameters(value={"browser","version","platform"})
+		//@Parameters(value="browser"/*,"version","platform"}*/)
 		@BeforeMethod
-		protected void setUp(/*String browser,String version,String platform*/){
-			APFDFrameworkDriver.initDriver(/*browser, version, platform*/);
+		protected void setUp(/*String browser/*,String version,String platform*/){
+			APFDFrameworkDriver.initDriver(/*browser/*, version, platform*/);
 		}
 
 		@AfterMethod

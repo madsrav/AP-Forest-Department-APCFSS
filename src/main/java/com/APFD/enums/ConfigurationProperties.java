@@ -1,5 +1,5 @@
 package com.APFD.enums;
 
 public enum ConfigurationProperties {
-	URL,RUNMODE,BROWSER
+	URL,RUNMODE,BROWSER,ADMINUSERNAME,FROUSERNAME,PASSWORD
 }

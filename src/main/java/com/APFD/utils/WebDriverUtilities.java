@@ -53,22 +53,29 @@ public class WebDriverUtilities {
 		Select select = new Select(dropdownElement);
 		List<WebElement> options = select.getOptions();
 
-		Random random = new Random();
-		int randomIndex = random.nextInt(1, options.size());
-		select.selectByIndex(randomIndex);
-		return options.get(randomIndex).getText();
-	}
-
-	    public String generateRandomText(int length)
-	    {
-		    final Faker faker = new Faker();
-	        return faker.lorem().characters(length);
+	        if (options.size() <= 1) {
+	            // If there are no options or only the "Select" option, return an appropriate message
+	            throw new IllegalArgumentException("No selectable options available in the dropdown.");
+	        } else {
+	            Random random = new Random();
+	            int randomIndex = random.nextInt(options.size() - 1) + 1; // Exclude the first option (index 0)
+	            select.selectByIndex(randomIndex);
+	            return options.get(randomIndex).getText();
+	        }
 	    }
 
-public String readIdFromFile(String filePath) throws IOException {
-    BufferedReader reader = new BufferedReader(new FileReader(filePath));
-    String id = reader.readLine();
-    reader.close();
-    return id;
-}
+	//Method to create a random text using faker class.
+	public String generateRandomText(int length)
+	{
+		final Faker faker = new Faker();
+		return faker.lorem().characters(length);
+	}
+
+	//Method to read the data from text file which is previously stored data.
+	public String readIdFromFile(String filePath) throws IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(filePath));
+		String id = reader.readLine();
+		reader.close();
+		return id;
+	}
 }

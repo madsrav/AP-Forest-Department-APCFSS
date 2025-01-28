@@ -16,12 +16,12 @@ public class APFDFrameworkDriver {
 		private APFDFrameworkDriver() {
 		}
 
-		//@Parameters(value={"browser","version","platform"})
-		public static void initDriver(/*String browser,String version,String platform*/) {
+	//	@Parameters(value="browser"/*,"version","platform"}*/)
+		public static void initDriver(/*String browser/*,String version,String platform*/) {
 			if (Objects.isNull(APFDFrameworkDriverManager.getDriver()))// driver == null
 			{
 				try {
-					APFDFrameworkDriverManager.setDriver(APFDDriverFactory.getDriver(/*browser, version, platform*/));
+					APFDFrameworkDriverManager.setDriver(APFDDriverFactory.getDriver(/*browser/*, version, platform*/));
 				} catch (MalformedURLException e) {
 					throw new RuntimeException("Please check capabilites of browser");
 				}

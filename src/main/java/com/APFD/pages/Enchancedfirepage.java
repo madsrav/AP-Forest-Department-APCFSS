@@ -15,6 +15,7 @@ import java.util.Random;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindAll;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -29,35 +30,40 @@ public class Enchancedfirepage {
 		PageFactory.initElements(APFDFrameworkDriverManager.getDriver(), this);
 	}
 
+	// Locate elements using multiple criteria to avoid stale element reference exception.
+
 	@FindBy(xpath = "//select[@name='year']")
 	private WebElement SelectYear;
 
-	@FindBy(xpath = "//input[@name='fireDataId']")
+	@FindAll({@FindBy(xpath = "//input[@name='fireDataId']"),
+		@FindBy(xpath="//input[@maxlength='6']")
+	})
 	private WebElement FireDataID;
 
-
-	@FindBy(xpath = "//div[contains(text(), 'Fire Id Already Exists')]")
+	@FindAll({@FindBy(xpath = "//div[contains(text(), 'Fire Id Already Exists')]"),
+		@FindBy(xpath="//div[@class='swal2-html-container']")
+	})
 	private WebElement FireIDAlreadyExists;
-	
-	@FindBy(xpath = "//button[text()='Okay']")
+
+	@FindAll({@FindBy(xpath = "//button[text()='Okay']"), 
+		@FindBy(xpath="//button[@class='swal2-confirm swal2-styled']"),
+		@FindBy(xpath="//div[@class='swal2-actions']")
+	})
 	private WebElement FireIDAlreadyEXistsClickOK;
 
 	@FindBy(xpath = "//select[@name='stype']")
 	private WebElement Stype;
 
-	@FindBy(xpath = "//option[text()='Rajahmundry']")
+	@FindBy(xpath = "//option[text()='Visakhapatnam']")
 	private WebElement Circle;
 
-	@FindBy(xpath = "//option[text()='DFO(T),Chintoor']")
+	@FindBy(xpath = "//option[text()='DFO(T),Chintapalli']")
 	private WebElement Division;
 
-//	@FindBy(xpath = "//select[@name='range']")
-//	private WebElement Range;
-	
-	@FindBy(xpath = "//option[text()='Chintoor I/c']")
+	@FindBy(xpath = "//option[text()='Chintapalli']")
 	private WebElement Range;
 
-	@FindBy(xpath = "//select[@name='section']")
+	@FindBy(xpath = "//option[@value='61' and text()='Chintapalli']")
 	private WebElement Section;
 
 	@FindBy(xpath = "//select[@name='beat']")
@@ -75,19 +81,27 @@ public class Enchancedfirepage {
 	@FindBy(xpath = "//input[@name='longitude']")
 	private WebElement Longitude;
 
-	@FindBy(xpath = "//input[@name='forestFireDate']")
+	@FindAll({@FindBy(xpath = "//input[@name='forestFireDate']"),
+		@FindBy(xpath="//input[@type='datetime-local']")
+	})
 	private WebElement ForestFireDateandTime;
 
-	@FindBy(xpath = "//button[@type='submit']")
+	@FindAll({@FindBy(xpath = "//button[@type='submit']"),
+		@FindBy(xpath="//button[contains(@class,'btn btn-success float-')]")
+	})
 	private WebElement SubmitButton;
 
-	@FindBy(xpath = "//div[@class='msg alert alert-info success']")
+	@FindAll({@FindBy(xpath="//button[contains(@class,'Toastify__close-button Toastify')]"),
+	@FindBy(xpath = "//*[local-name()='svg' and @aria-hidden='true']")
+	})
 	private WebElement SuccessMessage;
 
 	@FindBy(xpath = "//i[@class='fa fa-power-off']")
 	private WebElement ClickPowerIcon;
 
-	@FindBy(xpath = "//div[@id='sbmt_btn' and text()=' Logout']")
+	@FindAll({@FindBy(xpath = "//div[@id='sbmt_btn' and text()=' Logout']"),
+		@FindBy(xpath="//div[@class='btn btn-danger pull-right']")
+	})
 	private WebElement ClickLogoutButton;
 
 	public WebElement getSelectYear() {
@@ -100,6 +114,10 @@ public class Enchancedfirepage {
 
 	public WebElement getFireIDAlreadyExists() {
 		return FireIDAlreadyExists;
+	}
+
+	public WebElement getFireIDAlreadyEXistsClickOK() {
+		return FireIDAlreadyEXistsClickOK;
 	}
 
 	public WebElement getStype() {
@@ -164,14 +182,15 @@ public class Enchancedfirepage {
 	public static String fireDataID;
 
 	public void firePageRandomValueSelect() throws InterruptedException {
-		
+
 		WebDriverUtilities utils = new WebDriverUtilities();
 		WebDriver driver = APFDFrameworkDriverManager.getDriver();
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+		//Used 60 seconds to wait until the Toast message(successful message) got vanished.
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
 		Random r = new Random();
 		List<String> inputValues = new ArrayList<>();
-		
-		boolean isUnique = false;
+
+
 		String timeanddate= new Date().toString().replace(":","_").replace(" ","_");
 
 		// Generate a random date and time
@@ -180,6 +199,7 @@ public class Enchancedfirepage {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 		String formattedDateTime = randomDateTime.format(formatter);
 
+		boolean isUnique = false;
 		while (!isUnique) {
 			// Generate a random integer between 100 and 999
 			int lowerBound = 100;
@@ -188,74 +208,19 @@ public class Enchancedfirepage {
 
 			fireDataID = Integer.toString(randomInt);
 
-			// Clear previous inputs if any
-			getFireDataID().clear();
-			getFireDataID().sendKeys(fireDataID);
-
-			// Fill other fields
-			inputValues.clear();
-			// inputValues.add(DropdownUtils.selectRandomDropdownOption(getSelectYear()));
+			//From here entering data for creating new fire ID.
 			inputValues.add(utils.selectRandomDropdownOption(SelectYear));
-			inputValues.add(fireDataID);
-			inputValues.add(utils.selectRandomDropdownOption(Stype));
-			getCircle().click();
-			inputValues.add(getCircle().getText());
-			getDivision().click();
-			inputValues.add(getDivision().getText());
-
-			getRange().click();
-			inputValues.add(getRange().getText());
-			
-			wait.until(ExpectedConditions.visibilityOf(Section));
-			inputValues.add(utils.selectRandomDropdownOption(Section));
-
-			wait.until(ExpectedConditions.elementToBeClickable(Beat));
-			inputValues.add(utils.selectRandomDropdownOption(getBeat()));
-
-			wait.until(ExpectedConditions.visibilityOf(Compartment));
-			inputValues.add(utils.selectRandomDropdownOption(Compartment));
-
-			wait.until(ExpectedConditions.elementToBeClickable(Block));
-			inputValues.add(utils.selectRandomDropdownOption(Block));
-
-			getLatitude().sendKeys(fireDataID);
-			inputValues.add(fireDataID);
-
-			getLongitude().sendKeys(fireDataID);
-			inputValues.add(fireDataID);
-
-			// Use sendKeys to set the date and time
-			getForestFireDateandTime().sendKeys(formattedDateTime);
-			inputValues.add(formattedDateTime);
-
-			// Ensure the directory exists
-			String directoryPath = System.getProperty("user.dir") + "/FirePointTestData";
-			File directory = new File(directoryPath);
-			if (!directory.exists()) {
-				directory.mkdirs();
-			}
-
-			// Write the input values to a file
-			try (BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/" + fireDataID+" "+timeanddate+" " +"TestData.txt"))) {
-				for (String value : inputValues) {
-					writer.write(value);
-					writer.newLine();
-				}
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			// Submit the form
-			getSubmitButton().click();
+			getFireDataID().sendKeys(fireDataID);
 
 			// Check for duplicate Fire Data ID message
 			try {
-				WebElement duplicateMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Fire Id Already Exists')]")));
+				//WebElement duplicateMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Fire Id Already Exists')]")));
+				WebElement duplicateMessage= driver.findElement(By.xpath("//div[contains(text(), 'Fire Id Already Exists')]"));
 				if (duplicateMessage.isDisplayed()) {
-					getFireIDAlreadyExists().click();
+					getFireIDAlreadyEXistsClickOK().click();
 					System.out.println("Duplicate Fire Data ID detected: " + fireDataID);
-					// Clear the Fire Data ID field for the next attempt
+
+					// Clear the previous input for Fire Data ID and adding new ID.
 					getFireDataID().clear();
 					getFireDataID().sendKeys(fireDataID);
 				}
@@ -265,6 +230,62 @@ public class Enchancedfirepage {
 			}
 		}
 
+		// After verifying FireID Duplication then saving the data into respective text file.
+		inputValues.add(fireDataID);
+		inputValues.add(utils.selectRandomDropdownOption(Stype));
+		getCircle().click();
+		inputValues.add(getCircle().getText());
+		getDivision().click();
+		inputValues.add(getDivision().getText());
+
+		getRange().click();
+		inputValues.add(getRange().getText());
+		
+		getSection().click();
+		inputValues.add(getSection().getText());
+
+		wait.until(ExpectedConditions.elementToBeClickable(Beat));
+		inputValues.add(utils.selectRandomDropdownOption(getBeat()));
+
+		wait.until(ExpectedConditions.visibilityOf(Compartment));
+		inputValues.add(utils.selectRandomDropdownOption(Compartment));
+
+		wait.until(ExpectedConditions.elementToBeClickable(Block));
+		inputValues.add(utils.selectRandomDropdownOption(Block));
+
+		getLatitude().sendKeys(fireDataID);
+		inputValues.add(fireDataID);
+
+		getLongitude().sendKeys(fireDataID);
+		inputValues.add(fireDataID);
+
+		// Use sendKeys to set the date and time
+		getForestFireDateandTime().sendKeys(formattedDateTime);
+		inputValues.add(formattedDateTime);
+
+		// Ensure the directory exists
+		String directoryPath = System.getProperty("user.dir") + "/FirePointTestData";
+		File directory = new File(directoryPath);
+		if (!directory.exists()) {
+			directory.mkdirs();
+		}
+
+		// Write the input values to a file
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/" + fireDataID+" "+timeanddate+" " +"TestData.txt"))) {
+			for (String value : inputValues) {
+				writer.write(value);
+				writer.newLine();
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Submit the form
+		getSubmitButton().click();
+
+		wait.until(ExpectedConditions.elementToBeClickable(getSuccessMessage())).click();
+		
 		wait.until(ExpectedConditions.elementToBeClickable(getClickPowerIcon())).click();
 		wait.until(ExpectedConditions.elementToBeClickable(getClickLogoutButton())).click();
 	}

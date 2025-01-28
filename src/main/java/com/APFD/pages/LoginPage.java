@@ -1,30 +1,37 @@
 package com.APFD.pages;
 
-import java.time.Duration;
-
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindAll;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.APFD.driver.APFDFrameworkDriverManager;
 
 public class LoginPage {
 
-	@FindBy(xpath="//a[@class='active nav-link']")
+	// Locate elements using multiple criteria to avoid stale element reference exception.
+	
+	@FindAll({@FindBy(xpath = "//a[text()=' Login']"),
+		@FindBy(xpath="//a[@class='active nav-link']")
+	})
 	private WebElement ClickLoginLink;
 
-	@FindBy (xpath="//div/input[@name='username']") 
+	@FindAll({@FindBy (xpath="//div/input[@name='username']"),
+		@FindBy(xpath="//input[@placeholder='USER ID']")})
 	private WebElement EnterUsername;
 
-	@FindBy (xpath="//div/input[@name='password']") 
+	@FindAll({@FindBy (xpath="//div/input[@name='password']"),
+		@FindBy(xpath="//input[@type='password']")}) 
 	private WebElement EnterPassword;
 
-	@FindBy (xpath="//input[@name='deptCaptcha']") 
+	@FindAll({@FindBy (xpath="//input[@name='deptCaptcha']"),
+		@FindBy(xpath="//input[@id='deptCaptcha']"), 
+		@FindBy(xpath="//input[@placeholder='Captcha']")})
 	private WebElement EnterCaptcha;
 
-	@FindBy (xpath="//button[text()='Sign in']") 
+	@FindAll({@FindBy (xpath="//button[text()='Sign in']"),
+		@FindBy(xpath="//button[@type='submit']"),
+		@FindBy(xpath="//button[contains(@class,'btn btn-primary btn-md')]")})
 	private WebElement ClickSignInButton;
 
 	public LoginPage() {
@@ -52,18 +59,15 @@ public class LoginPage {
 		return ClickSignInButton;
 	}
 
-	public void login(String Password, String Username) throws InterruptedException
+	public void login(String username, String password) throws InterruptedException
 	{
 		getClickLoginLink().click();
-		getEnterUsername().sendKeys(Username);
-		getEnterPassword().sendKeys(Password);
-		
+		getEnterUsername().sendKeys(username);
+        getEnterPassword().sendKeys(password);
+
 		// Add a delay to manually solve the CAPTCHA
-		Thread.sleep(10000); // Wait for 30 seconds to solve CAPTCHA manually
-		
-//		WebDriverWait wait = new WebDriverWait(APFDFrameworkDriverManager.getDriver(), Duration.ofSeconds(60));
-//	    wait.until(ExpectedConditions.visibilityOf(EnterCaptcha));
-//	    wait.until(ExpectedConditions.attributeToBeNotEmpty(EnterCaptcha, "value"));
+		Thread.sleep(10000);
+
 		getClickSignInButton().click();
 	}
 }
